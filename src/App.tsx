@@ -13,7 +13,7 @@ function App() {
     unconfirmed: 0,
     total: 0,
   });
-  const [network, setNetwork] = useState("livenet");
+  const [network, setNetwork] = useState("BTClivenet");
 
   const getBasicInfo = async () => {
     const chainbow = (window as any).chainbow;
@@ -154,8 +154,12 @@ function App() {
                   }}
                   value={network}
                 >
-                  <Radio value={"livenet"}>livenet</Radio>
-                  <Radio value={"testnet"}>testnet</Radio>
+                  <Radio value={"BTClivenet"}>BTClivenet</Radio>
+                  <Radio value={"BTCtestnet"}>BTCtestnet</Radio>
+                  <Radio value={"BSVlivenet"}>BSVlivenet</Radio>
+                  <Radio value={"BSVtestnet"}>BSVtestnet</Radio>
+                  <Radio value={"RXDlivenet"}>RXDlivenet</Radio>
+                  <Radio value={"RXDtestnet"}>RXDtestnet</Radio>
                 </Radio.Group>
               </div>
             </Card>
