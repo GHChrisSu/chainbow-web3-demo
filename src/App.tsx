@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./App.css";
-import { Button, Card, Input, Radio } from "antd";
+import React, { useEffect, useRef, useState } from 'react';
+import './App.css';
+import { Button, Card, Input, Radio } from 'antd';
 
 const walletName = 'unisat'; //"chainbow"
 const defaultNetwork = 'livenet'; //"BTClivenet"
@@ -12,8 +12,8 @@ function App() {
   const [chainbowInstalled, setChainBowInstalled] = useState(false);
   const [connected, setConnected] = useState(false);
   const [accounts, setAccounts] = useState<string[]>([]);
-  const [publicKey, setPublicKey] = useState("");
-  const [address, setAddress] = useState("");
+  const [publicKey, setPublicKey] = useState('');
+  const [address, setAddress] = useState('');
   const [balance, setBalance] = useState({
     confirmed: 0,
     unconfirmed: 0,
@@ -57,9 +57,11 @@ function App() {
     console.log('🚀 ~ connect ~ chainbowInstalled:', chainbowInstalled);
     if (!chainbowInstalled) return;
 
-    chainbow.getAccounts().then((accounts: string[]) => {
-      console.log('🚀 ~ chainbow.getAccounts ~ accounts:', accounts);
-      handleAccountsChanged(accounts);
+    chainbow.requestAccounts().then((accounts: string[]) => {
+      // chainbow.getAccounts().then((accounts: string[]) => {
+        console.log('🚀 ~ chainbow.getAccounts ~ accounts:', accounts);
+        handleAccountsChanged(accounts);
+      // });
     });
   };
 
@@ -105,7 +107,7 @@ function App() {
     checkChainBow().then((chainbow) => {
       if (chainbow) {
         // //TODO：检查数据库是否链接过本网站，看session是否已经过期，如果没有过期，链接钱包
-        // connect();
+        connect();
       }
     });
   }, []);
@@ -117,7 +119,7 @@ function App() {
           <div>
             <Button
               onClick={() => {
-                window.location.href = "https://chainbow.io";
+                window.location.href = 'https://chainbow.io';
               }}
             >
               Install ChainBow Wallet
@@ -136,9 +138,9 @@ function App() {
         {connected ? (
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
             }}
           >
             <div>
@@ -156,19 +158,19 @@ function App() {
               title="Basic Info"
               style={{ width: 300, margin: 10 }}
             >
-              <div style={{ textAlign: "left", marginTop: 10 }}>
-                <div style={{ fontWeight: "bold" }}>Address:</div>
-                <div style={{ wordWrap: "break-word" }}>{address}</div>
+              <div style={{ textAlign: 'left', marginTop: 10 }}>
+                <div style={{ fontWeight: 'bold' }}>Address:</div>
+                <div style={{ wordWrap: 'break-word' }}>{address}</div>
               </div>
 
-              <div style={{ textAlign: "left", marginTop: 10 }}>
-                <div style={{ fontWeight: "bold" }}>PublicKey:</div>
-                <div style={{ wordWrap: "break-word" }}>{publicKey}</div>
+              <div style={{ textAlign: 'left', marginTop: 10 }}>
+                <div style={{ fontWeight: 'bold' }}>PublicKey:</div>
+                <div style={{ wordWrap: 'break-word' }}>{publicKey}</div>
               </div>
 
-              <div style={{ textAlign: "left", marginTop: 10 }}>
-                <div style={{ fontWeight: "bold" }}>Balance: (Satoshis)</div>
-                <div style={{ wordWrap: "break-word" }}>{balance.total}</div>
+              <div style={{ textAlign: 'left', marginTop: 10 }}>
+                <div style={{ fontWeight: 'bold' }}>Balance: (Satoshis)</div>
+                <div style={{ wordWrap: 'break-word' }}>{balance.total}</div>
               </div>
             </Card>
 
@@ -177,8 +179,8 @@ function App() {
               title="Switch Network"
               style={{ width: 300, margin: 10 }}
             >
-              <div style={{ textAlign: "left", marginTop: 10 }}>
-                <div style={{ fontWeight: "bold" }}>Network:</div>
+              <div style={{ textAlign: 'left', marginTop: 10 }}>
+                <div style={{ fontWeight: 'bold' }}>Network:</div>
                 <Radio.Group
                   onChange={async (e) => {
                     const network = await chainbow.switchNetwork(
@@ -188,12 +190,12 @@ function App() {
                   }}
                   value={network}
                 >
-                  <Radio value={"BTClivenet"}>BTClivenet</Radio>
-                  <Radio value={"BTCtestnet"}>BTCtestnet</Radio>
-                  <Radio value={"BSVlivenet"}>BSVlivenet</Radio>
-                  <Radio value={"BSVtestnet"}>BSVtestnet</Radio>
-                  <Radio value={"RXDlivenet"}>RXDlivenet</Radio>
-                  <Radio value={"RXDtestnet"}>RXDtestnet</Radio>
+                  <Radio value={'BTClivenet'}>BTClivenet</Radio>
+                  <Radio value={'BTCtestnet'}>BTCtestnet</Radio>
+                  <Radio value={'BSVlivenet'}>BSVlivenet</Radio>
+                  <Radio value={'BSVtestnet'}>BSVtestnet</Radio>
+                  <Radio value={'RXDlivenet'}>RXDlivenet</Radio>
+                  <Radio value={'RXDtestnet'}>RXDtestnet</Radio>
                 </Radio.Group>
               </div>
             </Card>
@@ -221,12 +223,12 @@ function App() {
 }
 
 function SignPsbtCard() {
-  const [psbtHex, setPsbtHex] = useState("");
-  const [psbtResult, setPsbtResult] = useState("");
+  const [psbtHex, setPsbtHex] = useState('');
+  const [psbtResult, setPsbtResult] = useState('');
   return (
     <Card size="small" title="Sign Psbt" style={{ width: 300, margin: 10 }}>
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>PsbtHex:</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>PsbtHex:</div>
         <Input
           defaultValue={psbtHex}
           onChange={(e) => {
@@ -234,9 +236,9 @@ function SignPsbtCard() {
           }}
         ></Input>
       </div>
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>Result:</div>
-        <div style={{ wordWrap: "break-word" }}>{psbtResult}</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>Result:</div>
+        <div style={{ wordWrap: 'break-word' }}>{psbtResult}</div>
       </div>
       <Button
         style={{ marginTop: 10 }}
@@ -258,12 +260,12 @@ function SignPsbtCard() {
 }
 
 function SignMessageCard() {
-  const [message, setMessage] = useState("hello world~");
-  const [signature, setSignature] = useState("");
+  const [message, setMessage] = useState('hello world~');
+  const [signature, setSignature] = useState('');
   return (
     <Card size="small" title="Sign Message" style={{ width: 300, margin: 10 }}>
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>Message:</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>Message:</div>
         <Input
           defaultValue={message}
           onChange={(e) => {
@@ -271,9 +273,9 @@ function SignMessageCard() {
           }}
         ></Input>
       </div>
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>Signature:</div>
-        <div style={{ wordWrap: "break-word" }}>{signature}</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>Signature:</div>
+        <div style={{ wordWrap: 'break-word' }}>{signature}</div>
       </div>
       <Button
         style={{ marginTop: 10 }}
@@ -291,16 +293,16 @@ function SignMessageCard() {
 }
 
 function PushTxCard() {
-  const [rawtx, setRawtx] = useState("");
-  const [txid, setTxid] = useState("");
+  const [rawtx, setRawtx] = useState('');
+  const [txid, setTxid] = useState('');
   return (
     <Card
       size="small"
       title="Push Transaction Hex"
       style={{ width: 300, margin: 10 }}
     >
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>rawtx:</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>rawtx:</div>
         <Input
           defaultValue={rawtx}
           onChange={(e) => {
@@ -308,9 +310,9 @@ function PushTxCard() {
           }}
         ></Input>
       </div>
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>txid:</div>
-        <div style={{ wordWrap: "break-word" }}>{txid}</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>txid:</div>
+        <div style={{ wordWrap: 'break-word' }}>{txid}</div>
       </div>
       <Button
         style={{ marginTop: 10 }}
@@ -330,12 +332,12 @@ function PushTxCard() {
 }
 
 function PushPsbtCard() {
-  const [psbtHex, setPsbtHex] = useState("");
-  const [txid, setTxid] = useState("");
+  const [psbtHex, setPsbtHex] = useState('');
+  const [txid, setTxid] = useState('');
   return (
     <Card size="small" title="Push Psbt Hex" style={{ width: 300, margin: 10 }}>
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>psbt hex:</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>psbt hex:</div>
         <Input
           defaultValue={psbtHex}
           onChange={(e) => {
@@ -343,9 +345,9 @@ function PushPsbtCard() {
           }}
         ></Input>
       </div>
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>txid:</div>
-        <div style={{ wordWrap: "break-word" }}>{txid}</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>txid:</div>
+        <div style={{ wordWrap: 'break-word' }}>{txid}</div>
       </div>
       <Button
         style={{ marginTop: 10 }}
@@ -369,11 +371,11 @@ function SendBitcoin() {
     'bc1qm9dzdq4x20xsu7apgkx057a7v83rkzysk5lq0z'
   );
   const [satoshis, setSatoshis] = useState(1000);
-  const [txid, setTxid] = useState("");
+  const [txid, setTxid] = useState('');
   return (
     <Card size="small" title="Send Bitcoin" style={{ width: 300, margin: 10 }}>
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>Receiver Address:</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>Receiver Address:</div>
         <Input
           defaultValue={toAddress}
           onChange={(e) => {
@@ -382,8 +384,8 @@ function SendBitcoin() {
         ></Input>
       </div>
 
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>Amount: (satoshis)</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>Amount: (satoshis)</div>
         <Input
           defaultValue={satoshis}
           onChange={(e) => {
@@ -391,9 +393,9 @@ function SendBitcoin() {
           }}
         ></Input>
       </div>
-      <div style={{ textAlign: "left", marginTop: 10 }}>
-        <div style={{ fontWeight: "bold" }}>txid:</div>
-        <div style={{ wordWrap: "break-word" }}>{txid}</div>
+      <div style={{ textAlign: 'left', marginTop: 10 }}>
+        <div style={{ fontWeight: 'bold' }}>txid:</div>
+        <div style={{ wordWrap: 'break-word' }}>{txid}</div>
       </div>
       <Button
         style={{ marginTop: 10 }}
