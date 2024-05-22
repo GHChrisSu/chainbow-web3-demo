@@ -2,6 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { Button, Card, Input, Radio } from "antd";
 
+const walletName = 'unisat'; //"chainbow"
+const defaultNetwork = 'livenet'; //"BTClivenet"
+
+// const walletName = "chainbow";
+// const defaultNetwork = "BTClivenet";
+
 function App() {
   const [chainbowInstalled, setChainBowInstalled] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -13,10 +19,10 @@ function App() {
     unconfirmed: 0,
     total: 0,
   });
-  const [network, setNetwork] = useState("BTClivenet");
+  const [network, setNetwork] = useState(defaultNetwork);
 
   const getBasicInfo = async () => {
-    const chainbow = (window as any).chainbow;
+    const chainbow = (window as any)[walletName];
     const [address] = await chainbow.getAccounts();
     setAddress(address);
 
@@ -30,16 +36,11 @@ function App() {
     setNetwork(network);
   };
 
-  const selfRef = useRef<{ accounts: string[] }>({
-    accounts: [],
-  });
-  const self = selfRef.current;
   const handleAccountsChanged = (_accounts: string[]) => {
-    if (self.accounts[0] === _accounts[0]) {
+    if (accounts.length > 0 && accounts[0] === _accounts[0]) {
       // prevent from triggering twice
       return;
     }
-    self.accounts = _accounts;
     if (_accounts.length > 0) {
       setAccounts(_accounts);
       setConnected(true);
@@ -52,38 +53,61 @@ function App() {
     }
   };
 
+  const connect = async () => {
+    console.log('🚀 ~ connect ~ chainbowInstalled:', chainbowInstalled);
+    if (!chainbowInstalled) return;
+
+    chainbow.getAccounts().then((accounts: string[]) => {
+      console.log('🚀 ~ chainbow.getAccounts ~ accounts:', accounts);
+      handleAccountsChanged(accounts);
+    });
+  };
+
+  const disconnect = () => {
+    chainbow.removeListener('accountsChanged', handleAccountsChanged);
+    chainbow.removeListener('networkChanged', handleNetworkChanged);
+
+    setConnected(false);
+    setAccounts([]);
+    setPublicKey('');
+    setAddress('');
+    setBalance({
+      confirmed: 0,
+      unconfirmed: 0,
+      total: 0,
+    });
+    setNetwork(defaultNetwork);
+  };
+
   const handleNetworkChanged = (network: string) => {
     setNetwork(network);
     getBasicInfo();
   };
 
-  useEffect(() => {
-    async function checkChainBow() {
-      let chainbow = (window as any).chainbow;
+  const checkChainBow = async () => {
+    let chainbow = (window as any)[walletName];
 
-      for (let i = 1; i < 10 && !chainbow; i += 1) {
-        await new Promise((resolve) => setTimeout(resolve, 100 * i));
-        chainbow = (window as any).chainbow;
-      }
-
-      if (chainbow) {
-        setChainBowInstalled(true);
-      } else if (!chainbow) return;
-
-      chainbow.getAccounts().then((accounts: string[]) => {
-        handleAccountsChanged(accounts);
-      });
-
-      chainbow.on("accountsChanged", handleAccountsChanged);
-      chainbow.on("networkChanged", handleNetworkChanged);
-
-      return () => {
-        chainbow.removeListener("accountsChanged", handleAccountsChanged);
-        chainbow.removeListener("networkChanged", handleNetworkChanged);
-      };
+    for (let i = 1; i < 10 && !chainbow; i += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 100 * i));
+      chainbow = (window as any)[walletName];
     }
 
-    checkChainBow().then();
+    if (chainbow) {
+      //应该保存到数据库，记录下来已经登录了，下次自动登录
+      setChainBowInstalled(true);
+      chainbow.on('accountsChanged', handleAccountsChanged);
+      chainbow.on('networkChanged', handleNetworkChanged);
+    }
+    return chainbow;
+  };
+
+  useEffect(() => {
+    checkChainBow().then((chainbow) => {
+      if (chainbow) {
+        // //TODO：检查数据库是否链接过本网站，看session是否已经过期，如果没有过期，链接钱包
+        // connect();
+      }
+    });
   }, []);
 
   if (!chainbowInstalled) {
@@ -103,7 +127,7 @@ function App() {
       </div>
     );
   }
-  const chainbow = (window as any).chainbow;
+  const chainbow = (window as any)[walletName];
   return (
     <div className="App">
       <header className="App-header">
@@ -117,6 +141,16 @@ function App() {
               alignItems: "center",
             }}
           >
+            <div>
+              <Button
+                onClick={async () => {
+                  await disconnect();
+                }}
+              >
+                Disconnect
+              </Button>
+            </div>
+
             <Card
               size="small"
               title="Basic Info"
@@ -174,8 +208,7 @@ function App() {
           <div>
             <Button
               onClick={async () => {
-                const result = await chainbow.requestAccounts();
-                handleAccountsChanged(result);
+                await connect();
               }}
             >
               Connect ChainBow Wallet
@@ -209,7 +242,9 @@ function SignPsbtCard() {
         style={{ marginTop: 10 }}
         onClick={async () => {
           try {
-            const psbtResult = await (window as any).chainbow.signPsbt(psbtHex);
+            const psbtResult = await (window as any)[walletName].signPsbt(
+              psbtHex
+            );
             setPsbtResult(psbtResult);
           } catch (e) {
             setPsbtResult((e as any).message);
@@ -243,7 +278,9 @@ function SignMessageCard() {
       <Button
         style={{ marginTop: 10 }}
         onClick={async () => {
-          const signature = await (window as any).chainbow.signMessage(message);
+          const signature = await (window as any)[walletName].signMessage(
+            message
+          );
           setSignature(signature);
         }}
       >
@@ -279,7 +316,7 @@ function PushTxCard() {
         style={{ marginTop: 10 }}
         onClick={async () => {
           try {
-            const txid = await (window as any).chainbow.pushTx(rawtx);
+            const txid = await (window as any)[walletName].pushTx(rawtx);
             setTxid(txid);
           } catch (e) {
             setTxid((e as any).message);
@@ -314,7 +351,7 @@ function PushPsbtCard() {
         style={{ marginTop: 10 }}
         onClick={async () => {
           try {
-            const txid = await (window as any).chainbow.pushPsbt(psbtHex);
+            const txid = await (window as any)[walletName].pushPsbt(psbtHex);
             setTxid(txid);
           } catch (e) {
             setTxid((e as any).message);
@@ -329,7 +366,7 @@ function PushPsbtCard() {
 
 function SendBitcoin() {
   const [toAddress, setToAddress] = useState(
-    "tb1qmfla5j7cpdvmswtruldgvjvk87yrflrfsf6hh0"
+    'bc1qm9dzdq4x20xsu7apgkx057a7v83rkzysk5lq0z'
   );
   const [satoshis, setSatoshis] = useState(1000);
   const [txid, setTxid] = useState("");
@@ -362,7 +399,7 @@ function SendBitcoin() {
         style={{ marginTop: 10 }}
         onClick={async () => {
           try {
-            const txid = await (window as any).chainbow.sendBitcoin(
+            const txid = await (window as any)[walletName].sendBitcoin(
               toAddress,
               satoshis
             );
